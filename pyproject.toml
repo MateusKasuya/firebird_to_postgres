@@ -1,0 +1,33 @@
+[project]
+name = "extract-load"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Mateus Kasuya",email = "mateusvbkasuya@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+blue = "^0.9.1"
+isort = "^6.0.1"
+taskipy = "^1.14.1"
+
+[tool.isort]
+profile = "black"
+known_third_party= []
+
+[tool.taskipy.tasks]
+
+format = "isort . && blue ."
+test = "poetry run pytest tests -v"
+run = "python src/main.py"
+
