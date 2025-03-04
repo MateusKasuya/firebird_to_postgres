@@ -25,7 +25,9 @@ class DbEngine:
         except Exception as e:
             raise ConnectionError(f'Erro ao conectar ao banco: {e}')
 
-    def firebird_engine(self, user: str, password: str, host: str, port: str, db_path: str) -> Engine:
+    def firebird_engine(
+        self, user: str, password: str, host: str, port: str, db_path: str
+    ) -> Engine:
         """
         Cria e retorna uma conexão com um banco de dados Firebird usando SQLAlchemy.
 
@@ -47,10 +49,14 @@ class DbEngine:
         Engine
             Objeto SQLAlchemy `Engine` para interagir com o banco Firebird.
         """
-        firebird_url = f'firebird+fdb://{user}:{password}@{host}:{port}/{db_path}'
+        firebird_url = (
+            f'firebird+fdb://{user}:{password}@{host}:{port}/{db_path}'
+        )
         return self._create_engine(firebird_url)
 
-    def postgres_engine(self, user: str, password: str, host: str, port: str, database: str) -> Engine:
+    def postgres_engine(
+        self, user: str, password: str, host: str, port: str, database: str
+    ) -> Engine:
         """
         Cria e retorna uma conexão com um banco de dados PostgreSQL usando SQLAlchemy.
 
@@ -72,9 +78,11 @@ class DbEngine:
         Engine
             Objeto SQLAlchemy `Engine` para interagir com o banco PostgreSQL.
         """
-        postgres_url = f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}'
+        postgres_url = (
+            f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}'
+        )
         return self._create_engine(postgres_url)
-    
+
     def close_engine(self, engine: Engine):
         """
         Fecha a conexão da engine SQLAlchemy.
