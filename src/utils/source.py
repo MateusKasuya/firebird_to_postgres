@@ -49,9 +49,7 @@ class DbEngine:
         Engine
             Objeto SQLAlchemy `Engine` para interagir com o banco Firebird.
         """
-        firebird_url = (
-            f'firebird+fdb://{user}:{password}@{host}:{port}/{db_path}'
-        )
+        firebird_url = f'firebird+fdb://{user}:{password}@{host}:{port}/{db_path}?charset=ISO8859_1'
         return self._create_engine(firebird_url)
 
     def postgres_engine(

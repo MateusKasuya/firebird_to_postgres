@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres
+    container_name: postgres
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - .env
+    networks:
+      - elt-postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432  # Expor a porta para conexão externa
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - elt-postgres
+    depends_on:
+      db:
+        condition: service_healthy  # Aguarda o PostgreSQL estar pronto antes de iniciar
+
+  python-elt:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy  # Aguarda o PostgreSQL estar pronto
+    env_file:
+      - .env
+    networks:
+      - elt-postgres
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  elt-postgres:
+    driver: bridge
