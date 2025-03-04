@@ -21,7 +21,7 @@ def main():
     destination_password = os.getenv('POSTGRES_PASSWORD')
     destination_host = os.getenv('POSTGRES_HOST')
     destination_port = os.getenv('POSTGRES_PORT')
-    destination_database = os.getenv('POSTGRES_DATABASE')
+    destination_database = os.getenv('POSTGRES_DB')
 
     pipeline = ExtractLoadProcess()
 
@@ -61,6 +61,7 @@ def main():
             source = pipeline.extract_from_source(
                 engine=source_engine, query=f'SELECT * FROM {table}'
             )
+            print(f'Dados Extraídos com sucesso da source: {table}')
 
             df_cdc = pipeline.change_data_capture(df=source, column='datatlz')
 

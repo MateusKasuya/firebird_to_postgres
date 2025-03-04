@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.utils.source import (
+from src.utils.source import (  # Ajuste conforme sua estrutura de diretórios
     DbEngine,
-)  # Ajuste conforme sua estrutura de diretórios
+)
 
 
 @pytest.fixture
