@@ -68,8 +68,8 @@ def main():
             if df_cdc.shape[0] > 0:
 
                 pipeline.load_to_destination(
-                    engine=destination_engine, df=df_cdc, table=table
-                )
+                        engine=destination_engine, df=df_cdc, table=table
+                    )
 
                 print(f'{table} ingerida com sucesso')
 
