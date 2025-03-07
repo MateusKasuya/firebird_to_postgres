@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - 5433:5433  # Expor a porta para conexão externa
+      - 5433:5432  # Expor a porta para conexão externa
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
       interval: 10s
@@ -24,7 +24,7 @@ services:
     container_name: adminer
     restart: always
     ports:
-      - 8082:8082
+      - 8082:8080
     networks:
       - elt-postgres
     depends_on:
