@@ -19,6 +19,13 @@ class ExtractLoadProcess(DbEngine):
     Classe responsável por extrair dados de um banco Firebird e carregá-los em um banco PostgreSQL.
     """
 
+    def __init__(self, write_mode: str):
+        """
+        write_mode : str, opcional
+            Modo de escrita no banco de dados. Pode ser "append" para ativar o cdc ou "overwrite" para dar full load.
+        """
+        self.write_mode = write_mode
+
     def extract_from_source(self, engine: Engine, query: str) -> pd.DataFrame:
         """
         Extrai dados do banco Firebird e retorna um DataFrame.
@@ -78,8 +85,7 @@ class ExtractLoadProcess(DbEngine):
         self,
         engine: Engine,
         df: pd.DataFrame,
-        table: str,
-        write_mode: str = 'append',
+        table: str
     ):
         """
         Carrega um DataFrame para um banco de dados PostgreSQL.
@@ -92,8 +98,6 @@ class ExtractLoadProcess(DbEngine):
             DataFrame a ser carregado.
         table : str
             Nome da tabela de destino.
-        write_mode : str, opcional
-            Modo de escrita no banco de dados. Pode ser "append" (padrão) ou "replace".
 
         Retorno:
         -------
@@ -102,7 +106,7 @@ class ExtractLoadProcess(DbEngine):
         try:
             with engine.connect() as conn:
                 df.to_sql(
-                    name=table, con=conn, if_exists=write_mode, index=False
+                    name=table, con=conn, if_exists=self.write_mode, index=False
                 )
         except SQLAlchemyError as e:
             raise ConnectionError(
