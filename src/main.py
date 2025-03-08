@@ -77,7 +77,7 @@ def main(write_mode: str):
                 else:
                     print(f'Não há novos registros, pulando inserção: {table}')
 
-            elif pipeline.write_mode == "overwrite":
+            elif pipeline.write_mode == "replace":
 
                 pipeline.load_to_destination(
                     engine=destination_engine, df=source, table=table
@@ -94,4 +94,4 @@ def main(write_mode: str):
 
 
 if __name__ == '__main__':
-    main("ovewrite")
+    main("replace")
