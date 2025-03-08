@@ -1,5 +1,6 @@
 import os
 import sys
+
 from dotenv import load_dotenv
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -22,7 +23,7 @@ def main(write_mode: str):
     destination_port = os.getenv('POSTGRES_PORT')
     destination_database = os.getenv('POSTGRES_DB')
 
-    pipeline = ExtractLoadProcess(write_mode= write_mode)
+    pipeline = ExtractLoadProcess(write_mode=write_mode)
 
     # Criando engines
     source_engine = pipeline.firebird_engine(
@@ -62,9 +63,11 @@ def main(write_mode: str):
             )
             print(f'Dados Extraídos com sucesso da source: {table}')
 
-            if pipeline.write_mode == "append":
+            if pipeline.write_mode == 'append':
 
-                df_cdc = pipeline.change_data_capture(df=source, column='datatlz')
+                df_cdc = pipeline.change_data_capture(
+                    df=source, column='datatlz'
+                )
 
                 if df_cdc.shape[0] > 0:
 
@@ -77,7 +80,7 @@ def main(write_mode: str):
                 else:
                     print(f'Não há novos registros, pulando inserção: {table}')
 
-            elif pipeline.write_mode == "replace":
+            elif pipeline.write_mode == 'replace':
 
                 pipeline.load_to_destination(
                     engine=destination_engine, df=source, table=table
@@ -94,4 +97,4 @@ def main(write_mode: str):
 
 
 if __name__ == '__main__':
-    main("replace")
+    main('replace')

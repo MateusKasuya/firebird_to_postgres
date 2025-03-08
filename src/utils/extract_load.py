@@ -82,10 +82,7 @@ class ExtractLoadProcess(DbEngine):
         return df_cdc
 
     def load_to_destination(
-        self,
-        engine: Engine,
-        df: pd.DataFrame,
-        table: str
+        self, engine: Engine, df: pd.DataFrame, table: str
     ):
         """
         Carrega um DataFrame para um banco de dados PostgreSQL.
@@ -106,7 +103,10 @@ class ExtractLoadProcess(DbEngine):
         try:
             with engine.connect() as conn:
                 df.to_sql(
-                    name=table, con=conn, if_exists=self.write_mode, index=False
+                    name=table,
+                    con=conn,
+                    if_exists=self.write_mode,
+                    index=False,
                 )
         except SQLAlchemyError as e:
             raise ConnectionError(
