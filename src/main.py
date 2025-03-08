@@ -1,6 +1,5 @@
 import os
 import sys
-print("OK")
 from dotenv import load_dotenv
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -8,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.utils.extract_load import ExtractLoadProcess
 
 
-def main():
+def main(write_mode: str):
     load_dotenv()
 
     source_user = os.getenv('FIREBIRD_USER')
@@ -23,7 +22,7 @@ def main():
     destination_port = os.getenv('POSTGRES_PORT')
     destination_database = os.getenv('POSTGRES_DB')
 
-    pipeline = ExtractLoadProcess()
+    pipeline = ExtractLoadProcess(write_mode= write_mode)
 
     # Criando engines
     source_engine = pipeline.firebird_engine(
@@ -63,18 +62,26 @@ def main():
             )
             print(f'Dados Extraídos com sucesso da source: {table}')
 
-            df_cdc = pipeline.change_data_capture(df=source, column='datatlz')
+            if pipeline.write_mode == "append":
 
-            if df_cdc.shape[0] > 0:
+                df_cdc = pipeline.change_data_capture(df=source, column='datatlz')
 
-                pipeline.load_to_destination(
+                if df_cdc.shape[0] > 0:
+
+                    pipeline.load_to_destination(
                         engine=destination_engine, df=df_cdc, table=table
                     )
 
-                print(f'{table} ingerida com sucesso')
+                    print(f'{table} ingerida com sucesso')
 
-            else:
-                print(f'Não há novos registros, pulando inserção: {table}')
+                else:
+                    print(f'Não há novos registros, pulando inserção: {table}')
+
+            elif pipeline.write_mode == "overwrite":
+
+                pipeline.load_to_destination(
+                    engine=destination_engine, df=source, table=table
+                )
 
     except Exception as e:
         print(f'Erro durante o pipeline: {e}')
@@ -87,4 +94,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main("ovewrite")
