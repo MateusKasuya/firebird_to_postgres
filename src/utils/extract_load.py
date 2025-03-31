@@ -2,7 +2,8 @@ import os
 import sys
 
 import pandas as pd
-from sqlalchemy import Engine
+from sqlalchemy import text
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 
 sys.path.append(
@@ -81,8 +82,26 @@ class ExtractLoadProcess(DbEngine):
 
         return df_cdc
 
+    def remove_null_chars(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Remove caracteres nulos ('\x00') de colunas do tipo string (object) em um DataFrame,
+        sem converter valores que não sejam do tipo str.
+
+        Args:
+            df (pd.DataFrame): DataFrame contendo os dados a serem tratados.
+
+        Returns:
+            pd.DataFrame: DataFrame com os caracteres nulos removidos das colunas do tipo string.
+        """
+        for col in df.select_dtypes(include='object'):
+            df[col] = df[col].apply(
+                lambda x: x.replace('\x00', '') if isinstance(x, str) else x
+            )
+
+        return df
+
     def load_to_destination(
-        self, engine: Engine, df: pd.DataFrame, table: str
+        self, engine: Engine, df: pd.DataFrame, schema: str, table: str
     ):
         """
         Carrega um DataFrame para um banco de dados PostgreSQL.
@@ -93,6 +112,8 @@ class ExtractLoadProcess(DbEngine):
             Engine SQLAlchemy para conexão com o banco de dados.
         df : pd.DataFrame
             DataFrame a ser carregado.
+        schema: str
+            Schema de destino
         table : str
             Nome da tabela de destino.
 
@@ -101,12 +122,25 @@ class ExtractLoadProcess(DbEngine):
         None
         """
         try:
-            with engine.connect() as conn:
+            with engine.begin() as conn:
+                if self.write_mode == 'replace':
+                    conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS {schema}'))
+                    print(f'Dropando tabela {schema}.{table} com CASCADE...')
+                    conn.execute(
+                        text(
+                            f'DROP TABLE IF EXISTS {schema}."{table}" CASCADE'
+                        )
+                    )
+                    print(
+                        f'Drop da tabela {schema}.{table} realizado com sucesso'
+                    )
+
                 df.to_sql(
                     name=table,
                     con=conn,
                     if_exists=self.write_mode,
                     index=False,
+                    schema=schema,
                 )
         except SQLAlchemyError as e:
             raise ConnectionError(
