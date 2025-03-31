@@ -105,8 +105,8 @@ if __name__ == '__main__':
         # (schema, 'TBMOT'),
         # (schema, 'FACTRC'),
         # (schema, 'CPTIT'),
-        (schema, 'TBHIS'),
-        (schema, 'TBFORCTA')
+        #(schema, 'TBHIS'),
+        (schema, 'TBFOR')
     ]
 
     main(list_tables=list_schema_tables, write_mode='replace')
