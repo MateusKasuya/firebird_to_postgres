@@ -5,10 +5,12 @@ from dotenv import load_dotenv
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from typing import List
+
 from src.utils.extract_load import ExtractLoadProcess
 
 
-def main(write_mode: str):
+def main(list_tables: List[tuple], write_mode: str):
     load_dotenv()
 
     source_user = os.getenv('FIREBIRD_USER')
@@ -42,20 +44,8 @@ def main(write_mode: str):
         database=destination_database,
     )
 
-    list_tables = [
-        'FRCTRC',
-        'TBCLI',
-        'TBFIL',
-        'TBMVP',
-        'TBCID',
-        'TBPRO',
-        'TBPROP',
-        'TBVEI',
-        'TBMOT',
-    ]
-
     try:
-        for table in list_tables:
+        for schema, table in list_tables:
             print(f'Iniciando pipeline da tabela: {table}')
 
             source = pipeline.extract_from_source(
@@ -71,9 +61,7 @@ def main(write_mode: str):
 
                 if df_cdc.shape[0] > 0:
 
-                    pipeline.load_to_destination(
-                        engine=destination_engine, df=df_cdc, table=table
-                    )
+                    df_cleaned = pipeline.remove_null_chars(df_cdc)
 
                     print(f'{table} ingerida com sucesso')
 
@@ -82,9 +70,14 @@ def main(write_mode: str):
 
             elif pipeline.write_mode == 'replace':
 
-                pipeline.load_to_destination(
-                    engine=destination_engine, df=source, table=table
-                )
+                df_cleaned = pipeline.remove_null_chars(source)
+
+            pipeline.load_to_destination(
+                engine=destination_engine,
+                df=df_cleaned,
+                schema=schema,
+                table=table,
+            )
 
     except Exception as e:
         print(f'Erro durante o pipeline: {e}')
@@ -97,4 +90,21 @@ def main(write_mode: str):
 
 
 if __name__ == '__main__':
-    main('replace')
+
+    schema = 'fn9'
+
+    list_schema_tables = [
+        (schema, 'FRCTRC'),
+        (schema, 'TBCLI'),
+        (schema, 'TBFIL'),
+        (schema, 'TBMVP'),
+        (schema, 'TBCID'),
+        (schema, 'TBPRO'),
+        (schema, 'TBPROP'),
+        (schema, 'TBVEI'),
+        (schema, 'TBMOT'),
+        (schema, 'FACTRC'),
+        (schema, 'CPTIT'),
+    ]
+
+    main(list_tables=list_schema_tables, write_mode='replace')
