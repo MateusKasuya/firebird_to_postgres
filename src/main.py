@@ -107,5 +107,6 @@ if __name__ == '__main__':
         (schema, 'CPTIT'),
         (schema, 'TBHIS')
     ]
+    
 
     main(list_tables=list_schema_tables, write_mode='replace')
