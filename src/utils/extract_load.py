@@ -142,6 +142,9 @@ class ExtractLoadProcess(DbEngine):
                     index=False,
                     schema=schema,
                 )
+
+                print(f'Tabela {schema}.{table} carregada com sucesso')
+
         except SQLAlchemyError as e:
             raise ConnectionError(
                 f'Erro ao gravar dados no banco destino: {e}'
