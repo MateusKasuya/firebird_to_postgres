@@ -91,22 +91,21 @@ def main(list_tables: List[tuple], write_mode: str):
 
 if __name__ == '__main__':
 
-    schema = 'fn9'
+    schema = 'mgp'
 
     list_schema_tables = [
-        # (schema, 'FRCTRC'),
-        # (schema, 'TBCLI'),
-        # (schema, 'TBFIL'),
-        # (schema, 'TBMVP'),
-        # (schema, 'TBCID'),
-        # (schema, 'TBPRO'),
-        # (schema, 'TBPROP'),
-        # (schema, 'TBVEI'),
-        # (schema, 'TBMOT'),
-        # (schema, 'FACTRC'),
-        # (schema, 'CPTIT'),
-        (schema, 'TBHIS'),
-        (schema, 'TBFORCTA')
+        (schema, 'FRCTRC'),
+        (schema, 'TBCLI'),
+        (schema, 'TBFIL'),
+        #(schema, 'TBMVP'),
+        (schema, 'TBCID'),
+        (schema, 'TBPRO'),
+        #(schema, 'TBPROP'),
+        #(schema, 'TBVEI'),
+        #(schema, 'TBMOT'),
+        (schema, 'FACTRC'),
+        (schema, 'CPTIT'),
+        (schema, 'TBHIS')
     ]
 
     main(list_tables=list_schema_tables, write_mode='replace')
