@@ -5,19 +5,26 @@ from dotenv import load_dotenv
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import time
 from typing import List
 
 from src.utils.extract_load import ExtractLoadProcess
 
 
-def main(list_tables: List[tuple], write_mode: str):
+def main(schema: str, list_tables: List[tuple], write_mode: str):
     load_dotenv()
 
     source_user = os.getenv('FIREBIRD_USER')
     source_password = os.getenv('FIREBIRD_PASSWORD')
     source_host = os.getenv('FIREBIRD_HOST')
     source_port = os.getenv('FIREBIRD_PORT')
-    source_db_path = os.getenv('FIREBIRD_DB_PATH')
+
+    if schema == 'fn9':
+        source_db_path = os.getenv('FIREBIRD_DB_PATH_FN9')
+    elif schema == 'mgp':
+        source_db_path = os.getenv('FIREBIRD_DB_PATH_MGP')
+    elif schema == 'rcr':
+        source_db_path = os.getenv('FIREBIRD_DB_PATH_RCR')
 
     destination_user = os.getenv('POSTGRES_USER')
     destination_password = os.getenv('POSTGRES_PASSWORD')
@@ -46,12 +53,12 @@ def main(list_tables: List[tuple], write_mode: str):
 
     try:
         for schema, table in list_tables:
-            print(f'Iniciando pipeline da tabela: {table}')
+            print(f'Iniciando pipeline da tabela: {schema}.{table}')
 
             source = pipeline.extract_from_source(
                 engine=source_engine, query=f'SELECT * FROM {table}'
             )
-            print(f'Dados Extraídos com sucesso da source: {table}')
+            print(f'Dados Extraídos com sucesso da source: {schema}.{table}')
 
             if pipeline.write_mode == 'append':
 
@@ -66,7 +73,7 @@ def main(list_tables: List[tuple], write_mode: str):
                     print(f'{table} ingerida com sucesso')
 
                 else:
-                    print(f'Não há novos registros, pulando inserção: {table}')
+                    print(f'Não há novos registros, pulando inserção: {schema}.{table}')
 
             elif pipeline.write_mode == 'replace':
 
@@ -91,22 +98,26 @@ def main(list_tables: List[tuple], write_mode: str):
 
 if __name__ == '__main__':
 
-    schema = 'mgp'
+    list_schema = ['fn9', 'mgp', 'rcr']
 
-    list_schema_tables = [
-        (schema, 'FRCTRC'),
-        (schema, 'TBCLI'),
-        (schema, 'TBFIL'),
-        #(schema, 'TBMVP'),
-        (schema, 'TBCID'),
-        (schema, 'TBPRO'),
-        #(schema, 'TBPROP'),
-        #(schema, 'TBVEI'),
-        #(schema, 'TBMOT'),
-        (schema, 'FACTRC'),
-        (schema, 'CPTIT'),
-        (schema, 'TBHIS')
-    ]
-    
+    for schema in list_schema:
 
-    main(list_tables=list_schema_tables, write_mode='replace')
+        list_schema_tables = [
+            (schema, 'FRCTRC'),
+            (schema, 'TBCLI'),
+            (schema, 'TBFIL'),
+            (schema, 'TBCID'),
+            (schema, 'TBPRO'),
+            (schema, 'FACTRC'),
+            (schema, 'CPTIT'),
+            (schema, 'TBHIS'),
+            (schema, 'TBCTA'),
+        ]
+
+        start_time = time.time()
+        main(schema=schema, list_tables=list_schema_tables, write_mode='replace')
+        end_time = time.time()
+
+        execution_time = end_time - start_time  # tempo total em segundos
+        print(f'Tempo de execução: {execution_time:.4f} segundos')
+
