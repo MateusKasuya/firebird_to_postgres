@@ -120,3 +120,4 @@ if __name__ == '__main__':
 
         execution_time = end_time - start_time  # tempo total em segundos
         print(f'Tempo de execução: {execution_time:.4f} segundos')
+
