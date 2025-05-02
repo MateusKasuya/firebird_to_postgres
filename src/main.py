@@ -98,7 +98,10 @@ def main(schema: str, list_tables: List[tuple], write_mode: str):
 
 if __name__ == '__main__':
 
-    list_schema = ['fn9', 'mgp', 'rcr']
+    list_schema = [
+        # 'fn9', 
+        # 'mgp', 
+        'rcr']
 
     for schema in list_schema:
 
