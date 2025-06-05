@@ -99,22 +99,23 @@ def main(schema: str, list_tables: List[tuple], write_mode: str):
 if __name__ == '__main__':
 
     list_schema = [
-        # 'fn9', 
-        # 'mgp', 
+        'fn9', 
+        'mgp', 
         'rcr']
 
     for schema in list_schema:
 
         list_schema_tables = [
-            (schema, 'FRCTRC'),
-            (schema, 'TBCLI'),
-            (schema, 'TBFIL'),
-            (schema, 'TBCID'),
-            (schema, 'TBPRO'),
-            (schema, 'FACTRC'),
-            (schema, 'CPTIT'),
-            (schema, 'TBHIS'),
-            (schema, 'TBCTA'),
+            # (schema, 'FRCTRC'),
+            # (schema, 'TBCLI'),
+            # (schema, 'TBFIL'),
+            # (schema, 'TBCID'),
+            # (schema, 'TBPRO'),
+            # (schema, 'FACTRC'),
+            # (schema, 'CPTIT'),
+            # (schema, 'TBHIS'),
+            # (schema, 'TBCTA'),
+            # (schema, 'TBFOR')
         ]
 
         start_time = time.time()
